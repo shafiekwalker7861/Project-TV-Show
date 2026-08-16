@@ -1,3 +1,5 @@
+let allEpisodes = [];
+
 function createEpisodeCard(episode) {
   const seasonNumber = String(episode.season).padStart(2, "0");
   const episodeNumber = String(episode.number).padStart(2, "0");
@@ -28,7 +30,8 @@ function makePageForEpisodes(episodeList) {
   rootElem.textContent = "";
 
   const counter = document.createElement("p");
-  counter.textContent = `Got ${episodeList.length} episode(s)`;
+  counter.textContent =
+    `Displaying ${episodeList.length} / ${allEpisodes.length} episodes`;
   rootElem.appendChild(counter);
 
   episodeList.forEach((episode) => {
@@ -37,7 +40,45 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
+function setupSearch() {
+  const rootElem = document.getElementById("root");
+
+  const searchContainer = document.createElement("div");
+
+  const label = document.createElement("label");
+  label.setAttribute("for", "search-input");
+  label.textContent = "Search episodes: ";
+
+  const searchInput = document.createElement("input");
+  searchInput.id = "search-input";
+  searchInput.type = "search";
+  searchInput.placeholder = "Search by name or summary";
+
+  searchContainer.appendChild(label);
+  searchContainer.appendChild(searchInput);
+
+  rootElem.parentNode.insertBefore(searchContainer, rootElem);
+
+  searchInput.addEventListener("input", function () {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+
+    const filteredEpisodes = allEpisodes.filter((episode) => {
+      const episodeName = episode.name.toLowerCase();
+      const episodeSummary = (episode.summary || "").toLowerCase();
+
+      return (
+        episodeName.includes(searchTerm) ||
+        episodeSummary.includes(searchTerm)
+      );
+    });
+
+    makePageForEpisodes(filteredEpisodes);
+  });
+}
+
 window.onload = function () {
-  const allEpisodes = getAllEpisodes();
+  allEpisodes = getAllEpisodes();
+
+  setupSearch();
   makePageForEpisodes(allEpisodes);
 };
