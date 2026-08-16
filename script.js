@@ -1,42 +1,43 @@
-//You can edit ALL of the code here
-// no getAllEpisodes() here at all — episodes.js already gives you one
+function createEpisodeCard(episode) {
+  const seasonNumber = String(episode.season).padStart(2, "0");
+  const episodeNumber = String(episode.number).padStart(2, "0");
+  const episodeCode = `S${seasonNumber}E${episodeNumber}`;
+
+  const card = document.createElement("div");
+  card.className = "episode-card";
+
+  const heading = document.createElement("h2");
+  heading.textContent = `${episodeCode} - ${episode.name}`;
+  card.appendChild(heading);
+
+  const image = document.createElement("img");
+  image.src = episode.image.medium;
+  image.alt = `Image for ${episode.name}`;
+  card.appendChild(image);
+
+  const summary = document.createElement("div");
+  summary.innerHTML = episode.summary;
+  card.appendChild(summary);
+
+  return card;
+}
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
-  rootElem.textContent = "";
 
-  console.log ("epispodelist:", episodeList.length);
+  rootElem.textContent = "";
 
   const counter = document.createElement("p");
   counter.textContent = `Got ${episodeList.length} episode(s)`;
   rootElem.appendChild(counter);
 
   episodeList.forEach((episode) => {
-    const seasonCode = String(episode.season).padStart(2, "0");
-    const episodeCode = String(episode.number).padStart(2, "0");
-    const code = `S${seasonCode}E${episodeCode}`;
-
-    const card = document.createElement("div");
-    card.className = "episode-card";
-
-      let heading = document.createElement ("h2");
-      heading.textContent = `${code} - ${episode.name}`;
-      card.appendChild(heading);
-console.log(episode.image);
-
-let image = document.createElement ("img");
-      image.setAttribute('src', episode.image.medium);
-      card.appendChild(image);
-
-let summary= document.createElement("p");
-summary.textContent = episode.summary;
-      card.appendChild(summary);
-
+    const card = createEpisodeCard(episode);
     rootElem.appendChild(card);
   });
 }
 
 window.onload = function () {
-  const allEpisodes = getAllEpisodes(); // this calls the one from episodes.js
+  const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
 };
