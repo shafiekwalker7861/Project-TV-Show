@@ -100,8 +100,7 @@ function setupEpisodeSelector() {
     const option = document.createElement("option");
 
     option.value = episode.id;
-    option.textContent =
-      `${getEpisodeCode(episode)} - ${episode.name}`;
+    option.textContent = `${getEpisodeCode(episode)} - ${episode.name}`;
 
     episodeSelector.appendChild(option);
   });
@@ -117,7 +116,6 @@ function setupEpisodeSelector() {
     }
 
     const searchInput = document.getElementById("search-input");
-
     searchInput.value = "";
 
     makePageForEpisodes(allEpisodes);
@@ -133,12 +131,36 @@ function setupEpisodeSelector() {
   });
 }
 
-function setup() {
-  allEpisodes = getAllEpisodes();
+async function setup() {
+  const episodeCount = document.getElementById("episode-count");
+  const rootElem = document.getElementById("root");
 
-  setupSearch();
-  setupEpisodeSelector();
-  makePageForEpisodes(allEpisodes);
+  episodeCount.textContent = "Loading episodes...";
+  rootElem.textContent = "Please wait while episodes are loading...";
+
+  
+
+  try {
+    const response = await fetch(
+      "https://api.tvmaze.com/shows/82/episodes"
+    );
+
+    if (!response.ok) {
+      throw new Error("Could not load episode data");
+    }
+
+    allEpisodes = await response.json();
+
+    rootElem.textContent = "";
+
+    setupSearch();
+    setupEpisodeSelector();
+    makePageForEpisodes(allEpisodes);
+  } catch (error) {
+    episodeCount.textContent = "Unable to load episodes.";
+    rootElem.textContent =
+      "Sorry, we could not load the episodes. Please try again later.";
+  }
 }
 
 window.onload = setup;
