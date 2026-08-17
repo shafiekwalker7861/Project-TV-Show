@@ -135,10 +135,31 @@ function setupEpisodeSelector() {
   });
 }
 
-window.onload = function () {
-  allEpisodes = getAllEpisodes();
+async function setup() {
+  const rootElem = document.getElementById("root");
 
-  setupSearch();
-  setupEpisodeSelector();
-  makePageForEpisodes(allEpisodes);
-};
+  rootElem.textContent = "Loading episodes...";
+
+  try {
+    const response = await fetch(
+      "https://api.tvmaze.com/shows/82/episodes"
+    );
+
+    if (!response.ok) {
+      throw new Error("Could not load episode data");
+    }
+
+    allEpisodes = await response.json();
+
+    rootElem.textContent = "";
+
+    setupSearch();
+    setupEpisodeSelector();
+    makePageForEpisodes(allEpisodes);
+  } catch (error) {
+    rootElem.textContent =
+      "Sorry, we could not load the episodes. Please try again later.";
+  }
+}
+
+window.onload = setup;
