@@ -4,21 +4,20 @@ let allShows = [];
 // Stores API results so the same URL is never fetched twice
 const apiCache = new Map();
 
-async function fetchJsonOnce(url) {
-  if (apiCache.has(url)) {
-    return apiCache.get(url);
+function fetchJsonOnce(url) {
+  if (!apiCache.has(url)) {
+    const request = fetch(url).then((response) => {
+      if (!response.ok) {
+        throw new Error(`Could not load data from ${url}`);
+      }
+
+      return response.json();
+    });
+
+    apiCache.set(url, request);
   }
 
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`Could not load data from ${url}`);
-  }
-
-  const data = await response.json();
-  apiCache.set(url, data);
-
-  return data;
+  return apiCache.get(url);
 }
 
 function getEpisodeCode(episode) {
