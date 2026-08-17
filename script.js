@@ -1,12 +1,18 @@
 let allEpisodes = [];
 
-function createEpisodeCard(episode) {
+function getEpisodeCode(episode) {
   const seasonNumber = String(episode.season).padStart(2, "0");
   const episodeNumber = String(episode.number).padStart(2, "0");
-  const episodeCode = `S${seasonNumber}E${episodeNumber}`;
+
+  return `S${seasonNumber}E${episodeNumber}`;
+}
+
+function createEpisodeCard(episode) {
+  const episodeCode = getEpisodeCode(episode);
 
   const card = document.createElement("div");
   card.className = "episode-card";
+  card.id = `episode-${episode.id}`;
 
   const heading = document.createElement("h2");
   heading.textContent = `${episodeCode} - ${episode.name}`;
@@ -32,6 +38,7 @@ function makePageForEpisodes(episodeList) {
   const counter = document.createElement("p");
   counter.textContent =
     `Displaying ${episodeList.length} / ${allEpisodes.length} episodes`;
+
   rootElem.appendChild(counter);
 
   episodeList.forEach((episode) => {
@@ -76,9 +83,62 @@ function setupSearch() {
   });
 }
 
+function setupEpisodeSelector() {
+  const rootElem = document.getElementById("root");
+
+  const selectorContainer = document.createElement("div");
+
+  const label = document.createElement("label");
+  label.setAttribute("for", "episode-selector");
+  label.textContent = "Select episode: ";
+
+  const episodeSelector = document.createElement("select");
+  episodeSelector.id = "episode-selector";
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Choose an episode";
+  episodeSelector.appendChild(defaultOption);
+
+  allEpisodes.forEach((episode) => {
+    const option = document.createElement("option");
+
+    option.value = episode.id;
+    option.textContent = `${getEpisodeCode(episode)} - ${episode.name}`;
+
+    episodeSelector.appendChild(option);
+  });
+
+  selectorContainer.appendChild(label);
+  selectorContainer.appendChild(episodeSelector);
+
+  rootElem.parentNode.insertBefore(selectorContainer, rootElem);
+
+  episodeSelector.addEventListener("change", function () {
+    if (episodeSelector.value === "") {
+      return;
+    }
+
+    const searchInput = document.getElementById("search-input");
+    searchInput.value = "";
+
+    makePageForEpisodes(allEpisodes);
+
+    const selectedEpisode = document.getElementById(
+      `episode-${episodeSelector.value}`
+    );
+
+    selectedEpisode.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+}
+
 window.onload = function () {
   allEpisodes = getAllEpisodes();
 
   setupSearch();
+  setupEpisodeSelector();
   makePageForEpisodes(allEpisodes);
 };
