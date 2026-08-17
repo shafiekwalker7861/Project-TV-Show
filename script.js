@@ -12,6 +12,7 @@ function getEpisodeCode(episode) {
 function createEpisodeCard(episode) {
   const episodeCard = document.createElement("div");
   episodeCard.classList.add("episode-card");
+  episodeCard.id = `episode-${episode.id}`;
 
   const heading = document.createElement("h2");
   heading.textContent = `${episode.name} - ${getEpisodeCode(episode)}`;
@@ -35,6 +36,7 @@ function makePageForEpisodes(episodeList) {
   const episodeCount = document.getElementById("episode-count");
 
   rootElem.textContent = "";
+
   episodeCount.textContent =
     `Displaying ${episodeList.length} / ${allEpisodes.length} episodes`;
 
@@ -76,10 +78,66 @@ function setupSearch() {
   });
 }
 
+function setupEpisodeSelector() {
+  const rootElem = document.getElementById("root");
+
+  const selectorContainer = document.createElement("div");
+
+  const label = document.createElement("label");
+  label.setAttribute("for", "episode-selector");
+  label.textContent = "Select episode: ";
+
+  const episodeSelector = document.createElement("select");
+  episodeSelector.id = "episode-selector";
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Choose an episode";
+
+  episodeSelector.appendChild(defaultOption);
+
+  allEpisodes.forEach((episode) => {
+    const option = document.createElement("option");
+
+    option.value = episode.id;
+    option.textContent =
+      `${getEpisodeCode(episode)} - ${episode.name}`;
+
+    episodeSelector.appendChild(option);
+  });
+
+  selectorContainer.appendChild(label);
+  selectorContainer.appendChild(episodeSelector);
+
+  rootElem.parentNode.insertBefore(selectorContainer, rootElem);
+
+  episodeSelector.addEventListener("change", function () {
+    if (episodeSelector.value === "") {
+      return;
+    }
+
+    const searchInput = document.getElementById("search-input");
+
+    searchInput.value = "";
+
+    makePageForEpisodes(allEpisodes);
+
+    const selectedEpisode = document.getElementById(
+      `episode-${episodeSelector.value}`
+    );
+
+    selectedEpisode.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+}
+
 function setup() {
   allEpisodes = getAllEpisodes();
 
   setupSearch();
+  setupEpisodeSelector();
   makePageForEpisodes(allEpisodes);
 }
 
