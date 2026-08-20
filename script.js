@@ -105,6 +105,12 @@ function showShowsPage() {
   backButton.hidden = true;
 
   controls.innerHTML = `
+    <label for="show-selector">Select show:</label>
+
+    <select id="show-selector">
+      <option value="">Choose a show</option>
+    </select>
+
     <label for="show-search">Search shows:</label>
 
     <input
@@ -113,6 +119,31 @@ function showShowsPage() {
       placeholder="Search by name, genre or summary"
     />
   `;
+
+  const showSelector = document.getElementById("show-selector");
+
+  allShows.forEach((show) => {
+    const option = document.createElement("option");
+
+    option.value = show.id;
+    option.textContent = show.name;
+
+    showSelector.appendChild(option);
+  });
+
+  showSelector.addEventListener("change", function () {
+    if (showSelector.value === "") {
+      return;
+    }
+
+    const selectedShow = allShows.find(
+      (show) => show.id === Number(showSelector.value)
+    );
+
+    if (selectedShow) {
+      showEpisodes(selectedShow);
+    }
+  });
 
   displayShows(allShows);
 
