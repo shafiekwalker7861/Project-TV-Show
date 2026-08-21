@@ -50,7 +50,7 @@ function createShowCard(show) {
 
   const genres = document.createElement("p");
   genres.innerHTML =
-    `<strong>Genres:</strong> ${show.genres.join(", ") || "Not available"}`;
+    `<strong>Genres:</strong> ${(show.genres || []).join(", ") || "Not available"}`;
 
   const status = document.createElement("p");
   status.innerHTML =
@@ -58,7 +58,7 @@ function createShowCard(show) {
 
   const rating = document.createElement("p");
   rating.innerHTML =
-    `<strong>Rating:</strong> ${show.rating.average ?? "Not rated"}`;
+    `<strong>Rating:</strong> ${show.rating?.average ?? "Not rated"}`;
 
   const runtime = document.createElement("p");
   runtime.innerHTML =
@@ -155,7 +155,7 @@ function showShowsPage() {
     const filteredShows = allShows.filter((show) => {
       const showName = show.name.toLowerCase();
 
-      const showGenres = show.genres
+      const showGenres = (show.genres || [])
         .join(" ")
         .toLowerCase();
 
